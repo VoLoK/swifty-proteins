@@ -1,4 +1,4 @@
-// Image+Trim.swift
+// UIImage+Ext.swift
 //
 // Copyright © 2020 Christopher Zielinski.
 // https://gist.github.com/chriszielinski/aec9a2f2ba54745dc715dd55f5718177
