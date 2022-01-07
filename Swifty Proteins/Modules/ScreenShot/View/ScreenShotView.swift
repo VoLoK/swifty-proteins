@@ -17,7 +17,6 @@ class ScreenShotView: UIViewController {
 		textField.font = .systemFont(ofSize: 20)
 		textField.borderStyle = .roundedRect
 		textField.placeholder = "Input your title here ... "
-//		textField.translatesAutoresizingMaskIntoConstraints = false
 		return textField
 	}()
 
@@ -29,14 +28,12 @@ class ScreenShotView: UIViewController {
 		textView.layer.cornerRadius = 10
 		textView.layer.borderColor = UIColor.lightGray.cgColor
 		textView.isScrollEnabled = false
-//		textView.translatesAutoresizingMaskIntoConstraints = false
 		return textView
 	}()
 
 	let imageView: UIImageView = {
 		let imageView = UIImageView()
 		imageView.contentMode = .scaleAspectFit
-//		imageView.translatesAutoresizingMaskIntoConstraints = false
 		return imageView
 	}()
 
