@@ -97,7 +97,6 @@ class ScreenShotView: UIViewController {
 	private func setupConstraints() {
 		NSLayoutConstraint.activate([
 			contentTextView.heightAnchor.constraint(greaterThanOrEqualToConstant: 50),
-//			imageView.heightAnchor.constraint(equalToConstant: imageView.image!.topCapHeight),
 
 			vstack.topAnchor.constraint(equalTo: scrollView.contentLayoutGuide.topAnchor, constant: gap),
 			vstack.bottomAnchor.constraint(equalTo: scrollView.contentLayoutGuide.bottomAnchor, constant: -gap),
