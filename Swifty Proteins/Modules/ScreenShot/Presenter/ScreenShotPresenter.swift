@@ -34,7 +34,6 @@ extension ScreenShotPresenter: ScreenShotViewOutput {
 	}
 
 	func shareButtonTapped(_ view: ScreenShotViewInput, title: String?, text: String?) {
-//		let items: [Any] =
 		router.routeToActivity(items: [view, image])
 	}
 }
