@@ -215,8 +215,9 @@ extension ProteinView: ProteinViewInput {
     
     private func showAtomInfo(hitObject: SCNHitTestResult, location: CGPoint) {
         guard let atom = molecule.atoms.first(where: { $0.vector == hitObject.node.position }),
-              let atomInfo = elements.elements.first(where: { $0.symbol == atom.type })
+              let atomInfo = elements.elements.first(where: { $0.symbol.uppercased() == atom.type })
         else { return }
+        print(atom.id)
         let popoverView = ProteinPopoverView()
         popoverView.modalPresentationStyle = .popover
         popoverView.popoverPresentationController?.permittedArrowDirections = .any
