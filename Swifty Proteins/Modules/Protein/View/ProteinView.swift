@@ -16,8 +16,8 @@ class ProteinView: UIViewController, UIPopoverPresentationControllerDelegate {
     private var molecule: Molecule = .init()
 
     private let colorPallete = CPKColor.shared
-	private let sphereRadius: CGFloat = 0.2
-	private let cylinderRadius: CGFloat = 0.1
+	private let sphereRadius: CGFloat = 0.002
+	private let cylinderRadius: CGFloat = 0.001
 	private let cylinderColor: UIColor = UIColor(red: 0.53, green: 0.56, blue: 0.56, alpha: 1.00)
 
 	// MARK: - Views
@@ -121,8 +121,8 @@ extension ProteinView: ProteinViewInput {
     
     private func fillScene(_ molecule: Molecule) {
         guard let scene = scnView.scene else { return }
-        let camera = createCameraNode(atoms: molecule.atoms)
-        scene.rootNode.addChildNode(camera)
+//        let camera = createCameraNode()
+//        scene.rootNode.addChildNode(camera)
         for atom in molecule.atoms {
             let newAtom = createAtomNode(atom: atom)
             scene.rootNode.addChildNode(newAtom)
