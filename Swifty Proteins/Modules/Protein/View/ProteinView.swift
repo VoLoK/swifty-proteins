@@ -24,7 +24,7 @@ class ProteinView: UIViewController, UIPopoverPresentationControllerDelegate {
 	// MARK: - Views
 	let scene = SCNScene()
 
-	private let arSwitch: UISwitch = {
+	private lazy var arSwitch: UISwitch = {
 		let arSwitch = UISwitch()
 		arSwitch.addTarget(self, action: #selector(arSwitched), for: .valueChanged)
 		return arSwitch
@@ -43,8 +43,9 @@ class ProteinView: UIViewController, UIPopoverPresentationControllerDelegate {
 
 	private lazy var arScnView: ARSCNView = {
 		let arScnView = ARSCNView()
-		arScnView.scene = scene
 		arScnView.isHidden = true
+		arScnView.autoenablesDefaultLighting = true
+		arScnView.automaticallyUpdatesLighting = true
 		arScnView.translatesAutoresizingMaskIntoConstraints = false
 		return arScnView
 	}()
@@ -87,6 +88,7 @@ class ProteinView: UIViewController, UIPopoverPresentationControllerDelegate {
 
     private func addSubviews() {
 		view.addSubview(spinner)
+		view.addSubview(arScnView)
         view.addSubview(scnView)
     }
 
@@ -96,6 +98,11 @@ class ProteinView: UIViewController, UIPopoverPresentationControllerDelegate {
             scnView.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor),
             scnView.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor),
             scnView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor),
+
+			arScnView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
+			arScnView.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor),
+			arScnView.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor),
+			arScnView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor),
 
 			spinner.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
 			spinner.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor),
@@ -137,7 +144,9 @@ extension ProteinView: ProteinViewInput {
     func showMolecule(_ molecule: Molecule) {
         self.molecule = molecule
         fillScene(molecule)
-		spinner.stopAnimating()
+		DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) { [weak self] in
+			self?.spinner.stopAnimating()
+		}
     }
     
     private func fillScene(_ molecule: Molecule) {
@@ -233,13 +242,18 @@ extension ProteinView: ProteinViewInput {
 	@objc private func arSwitched() {
 		if arSwitch.isOn {
 			let configuration = ARWorldTrackingConfiguration()
+			arScnView.scene = scene
 			arScnView.session.run(configuration)
 			arScnView.isHidden = false
 			scnView.isHidden = true
+			scnView.scene = nil
 		} else {
 			arScnView.session.pause()
 			arScnView.isHidden = true
 			scnView.isHidden = false
+			scnView.scene = scene
+			scene.background.contents = UIColor.sceneBackground.withAlphaComponent(0.1)
+			arScnView.scene = SCNScene()
 		}
 	}
 }
