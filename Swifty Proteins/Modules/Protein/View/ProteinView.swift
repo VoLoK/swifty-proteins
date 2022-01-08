@@ -112,6 +112,7 @@ class ProteinView: UIViewController, UIPopoverPresentationControllerDelegate {
 	}
 
 	@objc func shareButtonTapped() {
+		let scnView = arSwitch.isOn ? arScnView : scnView
 		if let image = scnView.snapshot().trimmingTransparentPixels(maximumAlphaChannel: 150) {
 			presenter.shareButtonTapped(self, image: image)
 		}
