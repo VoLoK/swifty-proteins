@@ -120,7 +120,7 @@ class ProteinView: UIViewController, UIPopoverPresentationControllerDelegate {
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
         guard let touch = touches.first else { return }
         let location = touch.location(in: scnView)
-        let hitList = scnView.hitTest(location, options: nil)
+		let hitList = arSwitch.isOn ? arScnView.hitTest(location, options: nil) : scnView.hitTest(location, options: nil)
         if let hitObject = hitList.first {
             showAtomInfo(hitObject: hitObject, location: location)
         }
@@ -150,8 +150,6 @@ extension ProteinView: ProteinViewInput {
     }
     
     private func fillScene(_ molecule: Molecule) {
-//        let camera = createCameraNode()
-//        scene.rootNode.addChildNode(camera)
         for atom in molecule.atoms {
             let newAtom = createAtomNode(atom: atom)
             scene.rootNode.addChildNode(newAtom)
@@ -162,16 +160,7 @@ extension ProteinView: ProteinViewInput {
             }
         }
     }
-    
-    private func createCameraNode(atoms: [Atom]) -> SCNNode {
-        let position: Double = atoms.count < 150 ? 35 : 70
-        let camera = SCNCamera()
-        let cameraNode = SCNNode()
-        cameraNode.camera = camera
-        cameraNode.position = SCNVector3(0, 0, position)
-        return cameraNode
-    }
-    
+
     private func createAtomNode(atom: Atom) -> SCNNode {
         let atomSphere = SCNSphere(radius: sphereRadius)
         atomSphere.firstMaterial?.diffuse.contents = colorPallete.getColorFor(atom.type)
@@ -180,7 +169,7 @@ extension ProteinView: ProteinViewInput {
         atomNode.position = atom.vector
         return atomNode
     }
-    
+
     private func createCylinderNode(firstAtom: Atom, secondAtom: Atom) -> SCNNode {
         let height = GLKVector3Distance(
             SCNVector3ToGLKVector3(firstAtom.vector),
