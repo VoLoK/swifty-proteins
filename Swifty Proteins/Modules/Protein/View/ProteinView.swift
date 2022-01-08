@@ -7,6 +7,7 @@
 
 import UIKit
 import SceneKit
+import ARKit
 
 class ProteinView: UIViewController, UIPopoverPresentationControllerDelegate {
     // MARK: - Properties
@@ -21,16 +22,32 @@ class ProteinView: UIViewController, UIPopoverPresentationControllerDelegate {
 	private let cylinderColor: UIColor = UIColor(red: 0.53, green: 0.56, blue: 0.56, alpha: 1.00)
 
 	// MARK: - Views
+	let scene = SCNScene()
+
+	private let arSwitch: UISwitch = {
+		let arSwitch = UISwitch()
+		arSwitch.addTarget(self, action: #selector(arSwitched), for: .valueChanged)
+		return arSwitch
+	}()
+
     private lazy var scnView: SCNView = {
         let scnView = SCNView()
         scnView.translatesAutoresizingMaskIntoConstraints = false
         scnView.allowsCameraControl = true
         scnView.autoenablesDefaultLighting = true
         scnView.backgroundColor = .clear
-        scnView.scene = SCNScene()
+        scnView.scene = scene
 		scnView.scene?.background.contents = UIColor.sceneBackground.withAlphaComponent(0.1)
         return scnView
     }()
+
+	private lazy var arScnView: ARSCNView = {
+		let arScnView = ARSCNView()
+		arScnView.scene = scene
+		arScnView.isHidden = true
+		arScnView.translatesAutoresizingMaskIntoConstraints = false
+		return arScnView
+	}()
 
     private lazy var spinner: UIActivityIndicatorView = {
         let view = UIActivityIndicatorView(style: .large)
@@ -61,7 +78,11 @@ class ProteinView: UIViewController, UIPopoverPresentationControllerDelegate {
 
 	private func setupNavigationItem() {
 		let screenshotButton = UIBarButtonItem(barButtonSystemItem: .camera, target: self, action: #selector(shareButtonTapped))
-		navigationItem.setRightBarButton(screenshotButton, animated: true)
+		let arLabel = UILabel()
+		arLabel.text = "AR"
+		let arBarLabel = UIBarButtonItem(customView: arLabel)
+		let arBarSwitch = UIBarButtonItem(customView: arSwitch)
+		navigationItem.setRightBarButtonItems([screenshotButton, arBarLabel, arBarSwitch], animated: true)
 	}
 
     private func addSubviews() {
@@ -120,7 +141,6 @@ extension ProteinView: ProteinViewInput {
     }
     
     private func fillScene(_ molecule: Molecule) {
-        guard let scene = scnView.scene else { return }
 //        let camera = createCameraNode()
 //        scene.rootNode.addChildNode(camera)
         for atom in molecule.atoms {
@@ -178,7 +198,7 @@ extension ProteinView: ProteinViewInput {
     }
 
 	func setTitle(_ title: String) {
-		self.title = title
+		self.title = "Protein: \(title)"
 	}
 
 	func showError(_ message: String) {
@@ -209,4 +229,17 @@ extension ProteinView: ProteinViewInput {
         popoverView.configure(element: atomInfo)
         self.present(popoverView, animated: true, completion: nil)
     }
+
+	@objc private func arSwitched() {
+		if arSwitch.isOn {
+			let configuration = ARWorldTrackingConfiguration()
+			arScnView.session.run(configuration)
+			arScnView.isHidden = false
+			scnView.isHidden = true
+		} else {
+			arScnView.session.pause()
+			arScnView.isHidden = true
+			scnView.isHidden = false
+		}
+	}
 }
