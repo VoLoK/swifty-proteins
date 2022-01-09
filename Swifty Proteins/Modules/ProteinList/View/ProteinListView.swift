@@ -47,6 +47,11 @@ class ProteinListView: UIViewController {
 		subscribeKeyboardNotifications()
         presenter.viewDidLoad(self)
     }
+	override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
+		let isDark = UITraitCollection.current.userInterfaceStyle == .dark
+		let image = isDark ? UIImage(named: "patternImage") : UIImage(named: "patternImage")?.invertedColors()
+		view.backgroundColor = UIColor(patternImage: image!).withAlphaComponent(0.7)
+	}
 
     private func setupUI() {
 		title = "Proteins"
