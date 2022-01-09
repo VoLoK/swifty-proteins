@@ -79,7 +79,7 @@ class ProteinView: UIViewController, UIPopoverPresentationControllerDelegate {
     }
 
 	private func setupNavigationItem() {
-		let screenshotButton = UIBarButtonItem(barButtonSystemItem: .camera, target: self, action: #selector(shareButtonTapped))
+		let screenshotButton = UIBarButtonItem(barButtonSystemItem: .camera, target: self, action: #selector(screenshotButtonTapped))
 		let arLabel = UILabel()
 		arLabel.text = "AR"
 		let arBarLabel = UIBarButtonItem(customView: arLabel)
@@ -112,10 +112,16 @@ class ProteinView: UIViewController, UIPopoverPresentationControllerDelegate {
 		])
 	}
 
-	@objc func shareButtonTapped() {
-		let scnView = arSwitch.isOn ? arScnView : scnView
-		if let image = scnView.snapshot().trimmingTransparentPixels(maximumAlphaChannel: 150) {
-			presenter.shareButtonTapped(self, image: image)
+	@objc func screenshotButtonTapped() {
+		view.bringSubviewToFront(spinner)
+		spinner.startAnimating()
+		DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) { [self] in
+			let scnView = arSwitch.isOn ? arScnView : scnView
+			if let image = scnView.snapshot().trimmingTransparentPixels(maximumAlphaChannel: 150) {
+				presenter.shareButtonTapped(self, image: image)
+			} else {
+				showError("No protein to share!")
+			}
 		}
 	}
 
@@ -202,9 +208,11 @@ extension ProteinView: ProteinViewInput {
 		self.title = "Protein: \(title)"
 	}
 
-	func showError(_ message: String) {
+	func showError(_ message: String, completion: (() -> Void)? = nil) {
 		let alert = UIAlertController(title: "Error", message: message, preferredStyle: .alert)
-		alert.addAction(UIAlertAction(title: "OK", style: .default))
+		alert.addAction(UIAlertAction(title: "OK", style: .default, handler: { _ in
+			completion?()
+		}))
 		present(alert, animated: true)
 		spinner.stopAnimating()
 	}
@@ -229,8 +237,12 @@ extension ProteinView: ProteinViewInput {
         popoverView.popoverPresentationController?.sourceRect = CGRect(x: location.x, y: location.y, width: 0, height: 0)
         popoverView.popoverPresentationController?.delegate = self
         popoverView.configure(element: atomInfo)
-        self.present(popoverView, animated: true, completion: nil)
+        present(popoverView, animated: true, completion: nil)
     }
+
+	func stopAnimating() {
+		spinner.stopAnimating()
+	}
 
 	@objc private func arSwitched() {
 		if arSwitch.isOn {
