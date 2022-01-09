@@ -53,6 +53,7 @@ class ProteinView: UIViewController, UIPopoverPresentationControllerDelegate {
     private lazy var spinner: UIActivityIndicatorView = {
         let view = UIActivityIndicatorView(style: .large)
         view.startAnimating()
+		view.color = .systemBackground
         view.translatesAutoresizingMaskIntoConstraints = false
         return view
     }()

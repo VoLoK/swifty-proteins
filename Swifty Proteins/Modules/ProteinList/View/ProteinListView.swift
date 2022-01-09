@@ -50,7 +50,9 @@ class ProteinListView: UIViewController {
 
     private func setupUI() {
 		title = "Proteins"
-		view.backgroundColor = UIColor(patternImage: UIImage(named: "patternImage")!)
+		let isDark = UITraitCollection.current.userInterfaceStyle == .dark
+		let image = isDark ? UIImage(named: "patternImage") : UIImage(named: "patternImage")?.invertedColors()
+		view.backgroundColor = UIColor(patternImage: image!).withAlphaComponent(0.7)
 		setupNavigationItem()
         addSubviews()
         setupConstraints()
@@ -60,7 +62,6 @@ class ProteinListView: UIViewController {
 		navigationController?.setNavigationBarHidden(false, animated: true)
 		navigationItem.hidesSearchBarWhenScrolling = false
 		navigationItem.searchController = searchController
-		navigationItem.titleView?.tintColor = .white
 		let randomButton = UIBarButtonItem(barButtonSystemItem: .refresh, target: self, action: #selector(randomButtonTapped))
 		let customButton = UIBarButtonItem(barButtonSystemItem: .add, target: self, action: #selector(customButtonTapped))
 		navigationItem.setRightBarButton(randomButton, animated: true)
